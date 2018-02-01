@@ -1,0 +1,58 @@
+﻿<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+    <metadata>
+    <!-- The identifier that must be unique within the hosting gallery -->
+    <id>QuickDeploy.Client</id>
+
+    <!-- The package version number that is used when resolving dependencies -->
+    <version>1.0.0</version>
+
+    <!-- Authors contain text that appears directly on the gallery -->
+    <authors>Tobias Ebert</authors>
+
+    <!-- Owners are typically nuget.org identities that allow gallery
+            users to easily find other packages by the same owners.  -->
+    <owners>Toqe</owners>
+
+    <!-- License and project URLs provide links for the gallery -->
+    <licenseUrl>https://github.com/Toqe/QuickDeploy/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/Toqe/QuickDeploy</projectUrl>
+
+    <!-- The icon is used in Visual Studio's package manager UI -->
+    <!--<iconUrl>http://github.com/contoso/UsefulStuff/nuget_icon.png</iconUrl>-->
+
+    <!-- If true, this value prompts the user to accept the license when
+            installing the package. -->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+
+    <!-- Any details about this particular release -->
+    <releaseNotes>Initial release</releaseNotes>
+
+    <!-- The description can be used in package manager UI. Note that the
+            nuget.org gallery uses information you add in the portal. -->
+    <description>A simple and efficient tool for deploying software to a server</description>
+
+    <!-- Copyright information -->
+    <copyright>Copyright ©2018 Tobias Ebert</copyright>
+
+    <!-- Tags appear in the gallery and can be used for tag searches -->
+    <tags>quick efficient deploy deployment</tags>
+
+    <!-- Dependencies are automatically installed when the package is installed -->
+    <!--<dependencies>
+        <dependency id="Newtonsoft.Json" version="9.0" />
+    </dependencies>-->
+
+      <references>
+        <group targetFramework="net45">
+          <reference file="QuickDeploy.Common.dll" />
+          <reference file="QuickDeploy.Client.dll" />
+        </group>
+      </references>
+    </metadata>
+
+    <files>
+      <file src="..\bin\QuickDeploy.Common.dll" target="lib\net45\" />
+      <file src="..\bin\QuickDeploy.Client.dll" target="lib\net45\" />
+    </files>
+</package>
