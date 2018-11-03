@@ -169,5 +169,5 @@ You can create the certificates following these steps:
 * The server will use `client-public.pfx` to check the client's certificate on connecting. The file doesn't contain private keys and can be exposed publicly.
 
 ## Changelog
-* Version 2.0.0: Added client authentication for better security.
+* Version 2.0.0: Added client authentication for better security. This is a breaking change to version 1.0.0, so clients and servers of different versions can't be used together.
 * Version 1.0.0: Initial release
