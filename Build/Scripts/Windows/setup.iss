@@ -1,5 +1,5 @@
 #define MyAppName "QuickDeploy Server"
-#define MyAppVersion "0.1"
+#define MyAppVersion "2.0.0"
 #define MyAppPublisher "QuickDeploy"
 #define MyAppURL "https://github.com/Toqe/QuickDeploy"
 #define ServiceFileName "QuickDeploy.ServerService.exe"
@@ -16,7 +16,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\QuickDeploy
 DefaultGroupName={#MyAppName}
 OutputDir=..\..\..\bin\setup
-OutputBaseFilename=quickDeploy-server-setup
+OutputBaseFilename=quickDeploy-server-setup-{#MyAppVersion}
 Compression=lzma
 SolidCompression=yes
 
@@ -28,7 +28,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: "..\..\..\bin\*.*"; DestDir: "{app}\Server"; Flags: ignoreversion;Excludes:*.pdb,*.xml
+Source: "..\..\..\bin\*.*"; DestDir: "{app}\Server"; Flags: ignoreversion;Excludes:*.pdb,*.xml,*.pfx
 
 [Icons]
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
@@ -130,9 +130,6 @@ begin
   begin
     if InstallService() = false then
       MsgBox('Unable to install the Service', mbError, MB_OK);
-
-    if StartService() = false then
-      MsgBox('Unable to start the Service', mbError, MB_OK);
       
     SetFirewallException('QuickDeployServer', ExpandConstant('{app}\Server\{#ServiceFileName}'));
   end;
