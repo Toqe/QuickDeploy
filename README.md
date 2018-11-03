@@ -27,7 +27,7 @@ This is where QuickDeploy comes into play. It requires you only to install a Win
 ### Setup of server
 * Copy these files from the `bin` directory to the server(s), to which deployments shall be targeted:
     * server-private.pfx
-	* client-public.pfx
+    * client-public.pfx
     * QuickDeploy.Common.dll
     * QuickDeploy.Server.dll
     * QuickDeploy.ServerService.exe
@@ -40,7 +40,7 @@ This is where QuickDeploy comes into play. It requires you only to install a Win
 ### Using the client
 * Create a new Visual Studio C# project.
 * Install the QuickDeploy.Client NuGet package by using Visual Studio's 'Manage Packages' or the Package Manager `Install-Package QuickDeploy.Client`
-* Copy the `QuickDeploy.Common\public.pfx` to the new project and set "Copy to Output Directory" to "Always copy".
+* Copy the files `QuickDeploy.Common\server-public.pfx` and `QuickDeploy.Common\client-private.pfx` to the new project and set "Copy to Output Directory" to "Always copy".
 * Use the following code as starting point for your own deployments:
 ```C#
 using System;
