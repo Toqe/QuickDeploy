@@ -73,7 +73,7 @@ namespace QuickDeploy.Example
             var directorySyncer = new DirectorySyncer(client);
 
             // ***
-            // Example 1: IIS deployment
+            // Example 1: Sync local directory to server (for example for deployment of IIS websites)
             // ***
 
             // Copy all files from local c:\develop\mywebsite\deploy to remote c:\inetpub\wwwroot\mywebsite
@@ -111,7 +111,7 @@ namespace QuickDeploy.Example
                 });
 
             // ***
-            // Example 3: Command execution
+            // Example 3: Execute command on server
             // ***
 
             // Copy all files from local c:\develop\mydatabase\deploy to c:\tools\mydatabase ...
