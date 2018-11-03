@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
@@ -17,13 +18,13 @@ namespace QuickDeploy.Server
 
         private readonly int port;
 
-        private readonly string serverCertificateFilename;
+        private string serverCertificateFilename;
 
-        private readonly string serverCertificatePassword;
+        private string serverCertificatePassword;
 
         private X509Certificate2 serverCertificate;
 
-        private readonly string expectedClientCertificateFilename;
+        private string expectedClientCertificateFilename;
 
         private X509Certificate2 expectedClientCertificate;
 
@@ -50,6 +51,26 @@ namespace QuickDeploy.Server
                 if (this.isRunning)
                 {
                     throw new InvalidOperationException("Server is already running.");
+                }
+
+                if (!File.Exists(this.serverCertificateFilename))
+                {
+                    this.serverCertificateFilename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, this.serverCertificateFilename);
+                }
+
+                if (!File.Exists(this.serverCertificateFilename))
+                {
+                    throw new InvalidOperationException($"Server certificate file '{this.serverCertificateFilename}' not found.");
+                }
+
+                if (!File.Exists(this.expectedClientCertificateFilename))
+                {
+                    this.expectedClientCertificateFilename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, this.expectedClientCertificateFilename);
+                }
+
+                if (!File.Exists(this.expectedClientCertificateFilename))
+                {
+                    throw new InvalidOperationException($"Expected client certificate file '{this.expectedClientCertificateFilename}' not found.");
                 }
 
                 this.serverCertificate = new X509Certificate2(this.serverCertificateFilename, this.serverCertificatePassword, X509KeyStorageFlags.Exportable);
