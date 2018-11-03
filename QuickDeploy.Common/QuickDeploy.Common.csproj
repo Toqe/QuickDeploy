@@ -75,10 +75,16 @@
     <Compile Include="StreamHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="private.pfx">
+    <Content Include="client-private.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="public.pfx">
+    <Content Include="client-public.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="server-private.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="server-public.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

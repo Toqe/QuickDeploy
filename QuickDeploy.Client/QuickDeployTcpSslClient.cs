@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Security;
 using System.Net.Sockets;
+using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using QuickDeploy.Common;
 using QuickDeploy.Common.Messages;
@@ -15,16 +16,27 @@ namespace QuickDeploy.Client
 
         private readonly X509Certificate2 expectedServerCertificate;
 
+        private readonly X509Certificate2 clientCertificate;
+
+        private readonly X509Certificate2Collection clientCertificateCollection;
+
         private readonly string hostname;
 
         private readonly int port;
 
-        public QuickDeployTcpSslClient(string hostname, int port, string certificateFilename)
+        public QuickDeployTcpSslClient(
+            string hostname, 
+            int port, 
+            string expectedServerCertificateFilename, 
+            string clientCertificateFilename, 
+            string clientCertificatePassword)
         {
             this.hostname = hostname;
             this.port = port;
 
-            this.expectedServerCertificate = new X509Certificate2(certificateFilename);
+            this.expectedServerCertificate = new X509Certificate2(expectedServerCertificateFilename);
+            this.clientCertificate = new X509Certificate2(clientCertificateFilename, clientCertificatePassword, X509KeyStorageFlags.Exportable);
+            this.clientCertificateCollection = new X509Certificate2Collection(this.clientCertificate);
         }
 
         public string RemoteAddress => $"TCP {this.hostname}:{this.port}";
@@ -37,7 +49,7 @@ namespace QuickDeploy.Client
 
                 using (var stream = new SslStream(client.GetStream(), false, this.VerifyServerCertificate))
                 {
-                    stream.AuthenticateAsClient(this.sslHostname);
+                    stream.AuthenticateAsClient(this.sslHostname, this.clientCertificateCollection, SslProtocols.Tls12, false);
 
                     this.streamHelper.Send(stream, request);
 

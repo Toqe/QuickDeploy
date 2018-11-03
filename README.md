@@ -3,22 +3,31 @@ A simple and efficient tool for deploying software
 
 ## What problem does this software solve?
 Complex software often requires many different steps during deployment. After the compiler is finished with the build, it may be necessary to 
-* copy files to a webserver
+
+* copy files to one or multiple webservers
 * run a command on a server to update the database
 * stop a Windows service, replace its binaries and start it again
+
 All these steps can be automated in many different ways. But you often have to learn, install and configure a lot of tools and helpers to achieve this.
 
-This is where QuickDeploy comes into play. It requires you only to install a Windows service on the server. Afterwards you only need to make sure you can create a secured connection to the server and do all the actions mentioned above with simple C# code. You will be able to simply use your Windows credentials with which you login to the remote server.
+This is where QuickDeploy comes into play. It requires you only to install a Windows service on the server. Afterwards you can do all the actions mentioned above with simple C# code - or if you like with VB.NET, Powershell or any tool that can use .NET DLLs.
+
+### Features
+
+* Secure communication: Mutually authenticated TLS connection between client and server
+* Easy authentication: Just use your Windows credentials to login on the server. Any action on the server will be executed with the Windows user's permissions.
+* Efficient file transfer: Files are only copied if they have changed and are compressed for transfer.
 
 ## Step by step walkthrough
 ### Getting started
 * Clone this repository
-* Optional, but recommended: Create your own certificate with a public private key pair as mentioned in the chapter below. Replace the stock private.pfx and public.pfx in the `QuickDeploy.Common` directory.
+* Recommended: Create your own certificates with publicprivate key pairs as mentioned in the chapter below. Replace the stock server-private.pfx, server-public.pfx, client-private.pfx and client-public.pfx in the `QuickDeploy.Common` directory.
 * Build `QuickDeploy.sln`, for example on the Visual Studio command line with `msbuild QuickDeploy.sln`
 
 ### Setup of server
 * Copy these files from the `bin` directory to the server(s), to which deployments shall be targeted:
-    * private.pfx
+    * server-private.pfx
+	* client-public.pfx
     * QuickDeploy.Common.dll
     * QuickDeploy.Server.dll
     * QuickDeploy.ServerService.exe
@@ -54,10 +63,12 @@ namespace QuickDeploy.Example
                 Password = "mypassword"
             };
 
-            var certificateFilename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "public.pfx");
+            var expectedServerCertificateFilename = "server-public.pfx";
+            var clientCertificateFilename = "client-private.pfx";
+            var clientCertificatePassword = "";
             var hostname = "targetserver.example.org";
             var port = 9876;
-            var client = new QuickDeployTcpSslClient(hostname, port, certificateFilename);
+            var client = new QuickDeployTcpSslClient(hostname, port, expectedServerCertificateFilename, clientCertificateFilename, clientCertificatePassword);
 
             var directorySyncer = new DirectorySyncer(client);
 
@@ -126,12 +137,37 @@ namespace QuickDeploy.Example
 }
 ```
 
-## Creation of your own certificate with a public private key pair
-This software uses a self signed certificate for the authentication of the server to the client and the TLS encryption of the transferred messages. It is recommended to create and use your own certificates. You can do this following these steps:
+## Creation of your own certificates with public private key pairs
+This software uses self signed certificates for the authentication between server and client and the TLS encryption of the transferred messages. It is recommended to create and use your own certificates. Otherwise any attacker having access to the open port of your server may take control over the server.
 
-* Go to http://www.selfsignedcertificate.com/ and create a certificate for example.org named example.org.crt
-* Use OpenSSL to create PFX files with private and public key from the certificate:
-```
-openssl pkcs12 –export –out private.pfx –inkey example.org.key –in example.org.crt
-openssl pkcs12 –export -nokeys –out public.pfx –in example.org.crt
-```
+You can create the certificates following these steps:
+
+* Creation of server certificate
+	* Go to http://www.selfsignedcertificate.com/ and create a certificate for example.org.
+	* Download the both files `example.org.key` and `example.org.cert`. Rename them to `server-example.org.key` and `server-example.org.cert`.
+	* Use OpenSSL (see https://wiki.openssl.org/index.php/Binaries or https://indy.fulgan.com/SSL/) and the following command line to create PFX files with private and public key from the certificate. When asked for a password you can leave it empty. If you choose a password here you have to fill it in the `QuickDeploy.ServerService.exe.config` in the appSettings sections as value for the key `serverCertificatePassword`.
+	```
+	openssl pkcs12 –export –out server-private.pfx –inkey server-example.org.key –in server-example.org.cert
+	openssl pkcs12 –export -nokeys –out server-public.pfx –in server-example.org.cert
+	```
+	* Copy the just created `server-public.pfx` and `server-private.pfx` to the `QuickDeploy.Common` directory and replace the existing ones.
+	
+* Creation of client certificate
+	* Go to http://www.selfsignedcertificate.com/ and create yet another certificate for example.org.
+	* Download the both files example.org.key and example.org.cert. Rename them to client-example.org.key and client-example.org.cert.
+	* Use OpenSSL and the following command line to create PFX files with private and public key from the certificate. When asked for a password you can leave it empty. If you choose a password here you have to fill it in `clientCertificatePassword` when creating an instance of `QuickDeployTcpSslClient`.
+	```
+	openssl pkcs12 –export –out client-private.pfx –inkey client-example.org.key –in client-example.org.cert
+	openssl pkcs12 –export -nokeys –out client-public.pfx –in client-example.org.cert
+	```
+	* Copy the just created `client-public.pfx` and `client-private.pfx` to `QuickDeploy.Common` and replace the existing ones.
+
+### What are the files used for?
+* The server will use `server-private.pfx` to authententicate to the client on connecting and encrypt the connection with TLS. The file contains the private keys of the server and should be handled carefully and not be made publicly available.
+* The client will use `server-public.pfx` to check the server's certificate on connecting. The file doesn't contain private keys and can be exposed publicly.
+* The client will use `client-private.pfx` to authententicate to the server on connecting. The file contains the private keys of the client and should be handled carefully and not be made publicly available.
+* The server will use `client-public.pfx` to check the client's certificate on connecting. The file doesn't contain private keys and can be exposed publicly.
+
+## Changelog
+* Version 2.0.0: Added client authentication for better security.
+* Version 1.0.0: Initial release

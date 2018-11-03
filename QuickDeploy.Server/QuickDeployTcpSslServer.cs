@@ -17,44 +17,59 @@ namespace QuickDeploy.Server
 
         private readonly int port;
 
-        private readonly string certificateFilename;
+        private readonly string serverCertificateFilename;
 
-        private X509Certificate serverCertificate;
+        private readonly string serverCertificatePassword;
 
-        private bool running;
+        private X509Certificate2 serverCertificate;
+
+        private readonly string expectedClientCertificateFilename;
+
+        private X509Certificate2 expectedClientCertificate;
+
+        private bool isRunning;
 
         private TcpListener tcpListener;
 
-        public QuickDeployTcpSslServer(int port, string certificateFilename)
+        public QuickDeployTcpSslServer(
+            int port, 
+            string serverCertificateFilename, 
+            string serverCertificatePassword,
+            string expectedClientCertificateFilename)
         {
             this.port = port;
-            this.certificateFilename = certificateFilename;
+            this.serverCertificateFilename = serverCertificateFilename;
+            this.serverCertificatePassword = serverCertificatePassword;
+            this.expectedClientCertificateFilename = expectedClientCertificateFilename;
         }
 
         public void Start()
         {
             try
             {
-                if (this.running)
+                if (this.isRunning)
                 {
                     throw new InvalidOperationException("Server is already running.");
                 }
 
-                if (this.serverCertificate == null)
-                {
-                    this.serverCertificate = new X509Certificate2(this.certificateFilename, "", X509KeyStorageFlags.Exportable);
-                }
+                this.serverCertificate = new X509Certificate2(this.serverCertificateFilename, this.serverCertificatePassword, X509KeyStorageFlags.Exportable);
+                this.expectedClientCertificate = new X509Certificate2(this.expectedClientCertificateFilename);
 
                 this.tcpListener = new TcpListener(IPAddress.Any, this.port);
 
                 this.tcpListener.Start();
-                this.running = true;
+                this.isRunning = true;
 
                 Task.Run(() =>
                 {
-                    while (this.running)
+                    while (this.isRunning)
                     {
                         var newClient = this.tcpListener.AcceptTcpClient();
+
+                        if (newClient == null)
+                        {
+                            continue;
+                        }
 
                         ThreadPool.QueueUserWorkItem(state =>
                         {
@@ -75,7 +90,7 @@ namespace QuickDeploy.Server
         {
             try
             {
-                this.running = false;
+                this.isRunning = false;
                 this.tcpListener.Stop();
             }
             catch (Exception ex)
@@ -89,11 +104,11 @@ namespace QuickDeploy.Server
             try
             {
                 using (client)
-                using (var sslStream = new SslStream(client.GetStream(), false))
+                using (var sslStream = new SslStream(client.GetStream(), false, this.VerifyClientCertificate))
                 {
                     try
                     {
-                        sslStream.AuthenticateAsServer(this.serverCertificate, false, SslProtocols.Tls, true);
+                        sslStream.AuthenticateAsServer(this.serverCertificate, true, SslProtocols.Tls12, true);
 
                         var request = this.streamHelper.Receive(sslStream);
                         var statusMessageSender = new StatusMessageSender(m => this.streamHelper.Send(sslStream, m));
@@ -116,6 +131,14 @@ namespace QuickDeploy.Server
                 Trace.TraceError(ex.ToString());
                 throw;
             }
+        }
+
+        private bool VerifyClientCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            var other = certificate as X509Certificate2;
+
+            return this.expectedClientCertificate.SerialNumber == other?.SerialNumber
+                   && this.expectedClientCertificate.Thumbprint == other?.Thumbprint;
         }
     }
 }
