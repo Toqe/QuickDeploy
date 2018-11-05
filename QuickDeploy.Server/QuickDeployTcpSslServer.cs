@@ -131,11 +131,29 @@ namespace QuickDeploy.Server
                     {
                         sslStream.AuthenticateAsServer(this.serverCertificate, true, SslProtocols.Tls12, true);
 
+                        var lockObject = new object();
+                        var hasResponseAlreadyBeenSent = false;
                         var request = this.streamHelper.Receive(sslStream);
-                        var statusMessageSender = new StatusMessageSender(m => this.streamHelper.Send(sslStream, m));
+
+                        var statusMessageSender = new StatusMessageSender(m =>
+                        {
+                            lock (lockObject)
+                            {
+                                if (!hasResponseAlreadyBeenSent)
+                                {
+                                    this.streamHelper.Send(sslStream, m);
+                                }
+                            }
+                        });
+
                         var controller = new Controller(statusMessageSender);
                         var response = controller.Handle(request);
-                        this.streamHelper.Send(sslStream, response);
+
+                        lock (lockObject)
+                        {
+                            this.streamHelper.Send(sslStream, response);
+                            hasResponseAlreadyBeenSent = true;
+                        }
                     }
                     catch (AuthenticationException ex)
                     {
