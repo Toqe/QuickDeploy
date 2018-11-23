@@ -43,6 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\QuickDeployAssemblyInfo.cs">
+      <Link>Properties\QuickDeployAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="DirectorySyncer\DirectorySyncer.cs" />
     <Compile Include="DirectorySyncer\DirectorySyncException.cs" />
     <Compile Include="FileFinder\FileFinder.cs" />

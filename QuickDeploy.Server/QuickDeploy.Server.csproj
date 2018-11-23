@@ -46,6 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\QuickDeployAssemblyInfo.cs">
+      <Link>Properties\QuickDeployAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Controller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuickDeployTcpSslServer.cs" />
