@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickDeploy.ServerService",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickDeploy.Common.CertificateGeneration", "QuickDeploy.Common.CertificateGeneration\QuickDeploy.Common.CertificateGeneration.csproj", "{6DC79985-BF32-493E-969C-7AE1913D3BE3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickDeploy.Common.CertificateGeneration.Console", "QuickDeploy.Common.CertificateGeneration.Console\QuickDeploy.Common.CertificateGeneration.Console.csproj", "{A8629B24-5497-475A-AD93-36ADB99D945C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{6DC79985-BF32-493E-969C-7AE1913D3BE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6DC79985-BF32-493E-969C-7AE1913D3BE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6DC79985-BF32-493E-969C-7AE1913D3BE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8629B24-5497-475A-AD93-36ADB99D945C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8629B24-5497-475A-AD93-36ADB99D945C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8629B24-5497-475A-AD93-36ADB99D945C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8629B24-5497-475A-AD93-36ADB99D945C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
