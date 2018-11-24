@@ -10,7 +10,7 @@ Complex software often requires many different steps during deployment. After th
 
 All these steps can be automated in many different ways. But you often have to learn, install and configure a lot of tools and helpers to achieve this.
 
-This is where QuickDeploy comes into play. It requires you only to install a Windows service on the server. Afterwards you can do all the actions mentioned above with simple C# code - or if you like with VB.NET, Powershell or any tool that can use .NET DLLs.
+This is where QuickDeploy comes in. It requires you only to install a Windows service on the server. Afterwards you can do all the actions mentioned above with simple C# code - or if you like with VB.NET, Powershell or any tool that can use .NET DLLs.
 
 ### Features
 
@@ -25,11 +25,11 @@ This is where QuickDeploy comes into play. It requires you only to install a Win
 ### Setup of server
 * Use the QuickDeploy-server-setup.exe from https://github.com/Toqe/QuickDeploy/releases and install it on the server. This will install the service and create a Windows firewall rule for it. Please check the firewall rule and make sure only trusted computers are able to access the service, for example by using IPSec.
 * Copy your own created certificates `server-private.pfx` and `client-public.pfx` to the installation directory, for example `C:\Program Files (x86)\QuickDeploy\Server`
-* Open `services.msc` and start `QuickDeployService`.
+* Run `services.msc` (Windows Services Manager) and start `QuickDeployService` by right-clicking on it and selecting "Start".
 
 ### Using the client
 * Create a new Visual Studio C# project.
-* Install the QuickDeploy.Client NuGet package by using Visual Studio's 'Manage Packages' or the Package Manager `Install-Package QuickDeploy.Client`
+* Install the `QuickDeploy.Client` NuGet package by using Visual Studio's 'Manage Packages' or the Package Manager `Install-Package QuickDeploy.Client`. You can find more information about the NuGet package on https://www.nuget.org/packages/QuickDeploy.Client
 * Copy your own created certificates `server-public.pfx` and `client-private.pfx` to the new project and set "Copy to Output Directory" to "Always copy".
 * Use the following code as starting point for your own deployments:
 ```C#
@@ -132,27 +132,11 @@ This software uses self signed certificates for the authentication between serve
 
 You can create the certificates following these steps:
 
-* Creation of server certificate
-	* Go to http://www.selfsignedcertificate.com/ and create a certificate for example.org.
-	* Download the both files `example.org.key` and `example.org.cert`. Rename them to `server-example.org.key` and `server-example.org.cert`.
-	* Use OpenSSL (see https://wiki.openssl.org/index.php/Binaries or https://indy.fulgan.com/SSL/) and the following command line to create PFX files with private and public key from the certificate. When asked for a password you can leave it empty. If you choose a password here you have to fill it in the `QuickDeploy.ServerService.exe.config` in the appSettings sections as value for the key `serverCertificatePassword`.
-	```
-	openssl pkcs12 –export –out server-private.pfx –inkey server-example.org.key –in server-example.org.cert
-	openssl pkcs12 –export -nokeys –out server-public.pfx –in server-example.org.cert
-	```
-	* For development: Copy the just created `server-public.pfx` and `server-private.pfx` to the `QuickDeploy.Common` directory and replace the existing ones.
-	
-* Creation of client certificate
-	* Go to http://www.selfsignedcertificate.com/ and create yet another certificate for example.org.
-	* Download the both files example.org.key and example.org.cert. Rename them to client-example.org.key and client-example.org.cert.
-	* Use OpenSSL and the following command line to create PFX files with private and public key from the certificate. When asked for a password you can leave it empty. If you choose a password here you have to fill it in `clientCertificatePassword` when creating an instance of `QuickDeployTcpSslClient`.
-	```
-	openssl pkcs12 –export –out client-private.pfx –inkey client-example.org.key –in client-example.org.cert
-	openssl pkcs12 –export -nokeys –out client-public.pfx –in client-example.org.cert
-	```
-	* For development: Copy the just created `client-public.pfx` and `client-private.pfx` to `QuickDeploy.Common` and replace the existing ones.
+* Go to https://github.com/Toqe/QuickDeploy/releases and download `QuickDeploy.Common.CertificateGeneration.Console.zip`.
+* Extract the zip file and run `QuickDeploy.Common.CertificateGeneration.Console.exe`. This will create a folder named `certificates_` and the current timestamp, for example `certificates_20181124_124541`. In this folder you will find subfolders `client` and `server`. The certificates in the `server` directory are intended to be copied to the server, the one in the `client` directory are used by the client.
+* For development purposes: Copy the just created `server-public.pfx`, `server-private.pfx`, `client-public.pfx` and `client-private.pfx` to the `QuickDeploy.Common` directory and replace the existing ones.
 
-### What are the files used for?
+### What are the certificate files used for?
 * The server will use `server-private.pfx` to authententicate to the client on connecting and encrypt the connection with TLS. The file contains the private keys of the server and should be handled carefully and not be made publicly available.
 * The client will use `server-public.pfx` to check the server's certificate on connecting. The file doesn't contain private keys and can be exposed publicly.
 * The client will use `client-private.pfx` to authententicate to the server on connecting. The file contains the private keys of the client and should be handled carefully and not be made publicly available.
