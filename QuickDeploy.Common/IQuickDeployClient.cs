@@ -10,6 +10,8 @@ namespace QuickDeploy.Common
 
         SyncDirectoryResponse SyncDirectory(SyncDirectoryRequest syncDirectoryRequest);
 
+        SyncFileResponse SyncFile(string filename, byte[] fileContent, Credentials credentials);
+
         ChangeServiceStatusResponse ChangeServiceStatus(ChangeServiceStatusRequest changeServiceStatusRequest);
 
         ExecuteCommandResponse ExecuteCommand(ExecuteCommandRequest executeCommandRequest);
