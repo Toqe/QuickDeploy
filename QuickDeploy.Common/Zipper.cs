@@ -61,5 +61,42 @@ namespace QuickDeploy.Common
                 }
             }
         }
+
+        public byte[] Gzip(byte[] data)
+        {
+            byte[] compressesData;
+
+            using (var outputStream = new MemoryStream())
+            {
+                using (var zip = new GZipStream(outputStream, CompressionMode.Compress))
+                {
+                    zip.Write(data, 0, data.Length);
+                }
+
+                compressesData = outputStream.ToArray();
+            }
+
+            return compressesData;
+        }
+
+        public byte[] UnGzip(byte[] compressedData)
+        {
+            byte[] decompressedData;
+
+            using (var outputStream = new MemoryStream())
+            {
+                using (var inputStream = new MemoryStream(compressedData))
+                {
+                    using (var zip = new GZipStream(inputStream, CompressionMode.Decompress))
+                    {
+                        zip.CopyTo(outputStream);
+                    }
+                }
+
+                decompressedData = outputStream.ToArray();
+            }
+
+            return decompressedData;
+        }
     }
 }

@@ -84,6 +84,18 @@ namespace QuickDeploy.Client
             return this.Call<SyncDirectoryRequest, SyncDirectoryResponse>(syncDirectoryRequest);
         }
 
+        public SyncFileResponse SyncFile(string filename, byte[] fileContent, Credentials credentials)
+        {
+            var syncFileRequest = new SyncFileRequest
+            {
+                Credentials = credentials,
+                Filename = filename,
+                GzippedFile = new Zipper().Gzip(fileContent),
+            };
+
+            return this.Call<SyncFileRequest, SyncFileResponse>(syncFileRequest);
+        }
+
         public ChangeServiceStatusResponse ChangeServiceStatus(ChangeServiceStatusRequest changeServiceStatusRequest)
         {
             return this.Call<ChangeServiceStatusRequest, ChangeServiceStatusResponse>(changeServiceStatusRequest);

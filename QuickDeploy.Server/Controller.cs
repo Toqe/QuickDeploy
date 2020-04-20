@@ -44,6 +44,11 @@ namespace QuickDeploy.Server
                     return this.SyncDirectory(syncDirectoryRequest);
                 }
 
+                if (request is SyncFileRequest syncFileRequest)
+                {
+                    return this.SyncFile(syncFileRequest);
+                }
+
                 if (request is ChangeServiceStatusRequest changeServiceStatusRequest)
                 {
                     return this.ChangeServiceStatus(changeServiceStatusRequest);
@@ -107,6 +112,30 @@ namespace QuickDeploy.Server
                 {
                     new Zipper().Unzip(request.Archive, request.Directory);
                 }
+
+                response.Success = true;
+            }
+
+            return response;
+        }
+
+        private SyncFileResponse SyncFile(SyncFileRequest request)
+        {
+            var response = new SyncFileResponse();
+
+            this.LogInfo($"Trying to logon as {request.Credentials.Username}");
+
+            using (this.Impersonate(request.Credentials))
+            {
+                this.LogInfo($"Logged on, now syncing file {request.Filename}");
+
+                if (File.Exists(request.Filename))
+                {
+                    File.Delete(request.Filename);
+                }
+
+                var data = new Zipper().UnGzip(request.GzippedFile);
+                File.WriteAllBytes(request.Filename, data);
 
                 response.Success = true;
             }

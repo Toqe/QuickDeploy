@@ -64,6 +64,8 @@
     <Compile Include="Messages\StatusMessageType.cs" />
     <Compile Include="Messages\ExecuteCommandRequest.cs" />
     <Compile Include="Messages\ExtractZipRequest.cs" />
+    <Compile Include="Messages\SyncFileResponse.cs" />
+    <Compile Include="Messages\SyncFileRequest.cs" />
     <Compile Include="Messages\SyncDirectoryRequest.cs" />
     <Compile Include="Messages\ExecuteCommandResponse.cs" />
     <Compile Include="Messages\ExtractZipResponse.cs" />
