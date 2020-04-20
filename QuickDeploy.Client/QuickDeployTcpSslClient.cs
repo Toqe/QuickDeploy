@@ -41,6 +41,8 @@ namespace QuickDeploy.Client
 
         public string RemoteAddress => $"TCP {this.hostname}:{this.port}";
 
+        public SslProtocols EnabledSslProtocols { get; set; } = SslProtocols.Tls12;
+
         public TResponse Call<TRequest, TResponse>(TRequest request) where TResponse : class
         {
             using (var client = new TcpClient())
@@ -49,7 +51,7 @@ namespace QuickDeploy.Client
 
                 using (var stream = new SslStream(client.GetStream(), false, this.VerifyServerCertificate))
                 {
-                    stream.AuthenticateAsClient(this.sslHostname, this.clientCertificateCollection, SslProtocols.Tls12, false);
+                    stream.AuthenticateAsClient(this.sslHostname, this.clientCertificateCollection, this.EnabledSslProtocols, false);
 
                     this.streamHelper.Send(stream, request);
 

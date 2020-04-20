@@ -44,6 +44,8 @@ namespace QuickDeploy.Server
             this.expectedClientCertificateFilename = expectedClientCertificateFilename;
         }
 
+        public SslProtocols EnabledSslProtocols { get; set; } = SslProtocols.Tls12;
+
         public void Start()
         {
             try
@@ -129,7 +131,7 @@ namespace QuickDeploy.Server
                 {
                     try
                     {
-                        sslStream.AuthenticateAsServer(this.serverCertificate, true, SslProtocols.Tls12, true);
+                        sslStream.AuthenticateAsServer(this.serverCertificate, true, this.EnabledSslProtocols, true);
 
                         var lockObject = new object();
                         var hasResponseAlreadyBeenSent = false;
