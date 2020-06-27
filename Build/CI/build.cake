@@ -45,9 +45,9 @@ class CommandProcess
 
 List<CommandProcess> commandList = new List<CommandProcess>()
 {
-    new CommandProcess(buildStr,"b", "01" , "1","build the monitoR project"),
+    new CommandProcess(buildStr,"b", "01" , "1","build the application"),
     new CommandProcess(cleanStr,"c", "" , "","clean obj/bin folders"),
-    new CommandProcess(packStr,"pkg", "" , "","Package the application")
+    new CommandProcess(packStr,"pkg", "" , "","package the application")
 };
 
 var target = Argument("target", "Default");
@@ -67,7 +67,7 @@ Task(buildStr)
     Warning("Restoring Nuget Packages:");
     NuGetRestore(solutionPath);
 
-    Warning("Building MonitoR Source:");
+    Warning("Building Source:");
     DotNetBuild(solutionPath, settings =>
     settings.SetConfiguration("Release")
         .SetVerbosity(Verbosity.Minimal)
