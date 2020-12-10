@@ -5,7 +5,7 @@
     <id>QuickDeploy.Client</id>
 
     <!-- The package version number that is used when resolving dependencies -->
-    <version>2.1.2</version>
+    <version>2.2.0</version>
 
     <!-- Authors contain text that appears directly on the gallery -->
     <authors>Tobias Ebert</authors>

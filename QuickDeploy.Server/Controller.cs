@@ -5,6 +5,8 @@ using System.IO.Compression;
 using System.Linq;
 using System.Security.Principal;
 using System.ServiceProcess;
+using System.Threading;
+using Microsoft.Web.Administration;
 using QuickDeploy.Common;
 using QuickDeploy.Common.FileFinder;
 using QuickDeploy.Common.Messages;
@@ -52,6 +54,11 @@ namespace QuickDeploy.Server
                 if (request is ChangeServiceStatusRequest changeServiceStatusRequest)
                 {
                     return this.ChangeServiceStatus(changeServiceStatusRequest);
+                }
+
+                if (request is ChangeIisAppPoolStatusRequest changeIisAppPoolStatus)
+                {
+                    return this.ChangeIisAppPoolStatus(changeIisAppPoolStatus);
                 }
 
                 if (request is ExecuteCommandRequest executeCommandRequest)
@@ -170,6 +177,68 @@ namespace QuickDeploy.Server
 
                     return new ChangeServiceStatusResponse { Success = true };
                 }
+            }
+        }
+
+        private ChangeIisAppPoolStatusResponse ChangeIisAppPoolStatus(ChangeIisAppPoolStatusRequest request)
+        {
+            this.LogInfo($"Trying to logon as {request.Credentials.Username}");
+
+            WindowsServiceAccessGranter.GrantAccessToWindowStationAndDesktop(request.Credentials.Domain, request.Credentials.Username);
+
+            using (this.Impersonate(request.Credentials, LogonType.Batch))
+            {
+                this.LogInfo($"Logged on, now changing IIS app pool {request.IisAppPoolName} status to {request.DesiredServiceStatus}");
+
+                var serverManager = new ServerManager();
+                var appPool = serverManager.ApplicationPools.FirstOrDefault(ap => ap.Name == request.IisAppPoolName);
+
+                if (appPool == null)
+                {
+                    throw new InvalidOperationException($"IIS app pool {request.IisAppPoolName} not found.");
+                }
+
+                if (appPool.State != ObjectState.Started && request.DesiredServiceStatus == ServiceStatus.Start)
+                {
+                    appPool.Start();
+
+                    for (var i = 0; i < 10; i++)
+                    {
+                        if (appPool.State == ObjectState.Started)
+                        {
+                            break;
+                        }
+
+                        Thread.Sleep(500);
+                    }
+
+                    if (appPool.State != ObjectState.Started)
+                    {
+                        throw new InvalidOperationException("Could not start IIS app pool {request.IisAppPoolName}.");
+                    }
+                }
+
+                if (appPool.State != ObjectState.Stopped && request.DesiredServiceStatus == ServiceStatus.Stop)
+                {
+                    appPool.Stop();
+
+                    for (var i = 0; i < 10; i++)
+                    {
+                        if (appPool.State == ObjectState.Stopped)
+                        {
+                            break;
+                        }
+
+                        Thread.Sleep(500);
+                    }
+
+                    if (appPool.State != ObjectState.Stopped)
+                    {
+                        throw new InvalidOperationException("Could not stop IIS app pool {request.IisAppPoolName}.");
+                    }
+                }
+
+                return new ChangeIisAppPoolStatusResponse { Success = true };
             }
         }
 
