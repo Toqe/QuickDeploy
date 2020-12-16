@@ -14,6 +14,15 @@ namespace QuickDeploy.ServerService
             var serverCertificateFilename = ConfigurationManager.AppSettings["serverCertificateFilename"];
             var serverCertificatePassword = ConfigurationManager.AppSettings["serverCertificatePassword"];
             var expectedClientCertificateFilename = ConfigurationManager.AppSettings["expectedClientCertificateFilename"];
+            var serviceName = ConfigurationManager.AppSettings["serviceName"]?.Trim();
+            var runAsLocalSystemString = ConfigurationManager.AppSettings["runAsLocalSystem"]?.Trim().ToLowerInvariant();
+
+            var runAsLocalSystem = runAsLocalSystemString == "true";
+
+            if (string.IsNullOrWhiteSpace(serviceName))
+            {
+                serviceName = "QuickDeployService";
+            }
 
             HostFactory.Run(x =>
             {
@@ -24,11 +33,18 @@ namespace QuickDeploy.ServerService
                     s.WhenStopped(tc => tc.Stop());
                 });
 
-                x.RunAsNetworkService();
+                if (runAsLocalSystem)
+                {
+                    x.RunAsLocalSystem();
+                }
+                else
+                {
+                    x.RunAsNetworkService();
+                }
 
-                x.SetDescription("QuickDeployService");
-                x.SetDisplayName("QuickDeployService");
-                x.SetServiceName("QuickDeployService");
+                x.SetDescription(serviceName);
+                x.SetDisplayName(serviceName);
+                x.SetServiceName(serviceName);
             });
         }
     }
