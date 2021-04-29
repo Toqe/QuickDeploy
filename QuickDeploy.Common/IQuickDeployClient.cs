@@ -18,6 +18,8 @@ namespace QuickDeploy.Common
 
         ExecuteCommandResponse ExecuteCommand(ExecuteCommandRequest executeCommandRequest);
 
-        ExtractZipResponse ExtractZip(ExtractZipRequest request);
+        ExtractZipResponse ExtractZip(ExtractZipRequest extractZipRequest);
+
+        ProxyResponse Proxy(ProxyRequest proxyRequest);
     }
 }

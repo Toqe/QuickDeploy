@@ -62,6 +62,8 @@
     <Compile Include="Messages\ChangeIisAppPoolStatusResponse.cs" />
     <Compile Include="Messages\ChangeServiceStatusResponse.cs" />
     <Compile Include="Messages\Credentials.cs" />
+    <Compile Include="Messages\ProxyRequest.cs" />
+    <Compile Include="Messages\ProxyResponse.cs" />
     <Compile Include="Messages\StatusMessage.cs" />
     <Compile Include="Messages\StatusMessageType.cs" />
     <Compile Include="Messages\ExecuteCommandRequest.cs" />

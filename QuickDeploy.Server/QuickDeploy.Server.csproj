@@ -53,6 +53,10 @@
     <Compile Include="WindowsServiceAccessGranter.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\QuickDeploy.Client\QuickDeploy.Client.csproj">
+      <Project>{6eae138b-3cc7-4252-a586-b6b5172e7ced}</Project>
+      <Name>QuickDeploy.Client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QuickDeploy.Common\QuickDeploy.Common.csproj">
       <Project>{eb999dca-e964-4526-9a73-c5954934bfdd}</Project>
       <Name>QuickDeploy.Common</Name>

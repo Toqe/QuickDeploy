@@ -33,6 +33,11 @@ namespace QuickDeploy.Common
             return this.Deserialize(serialized);
         }
 
+        public T Clone<T>(T t)
+        {
+            return (T)this.Deserialize(this.Serialize(t));
+        }
+
         private void ReadToBuffer(Stream stream, byte[] buffer, int start, int length)
         {
             int dataRead = 0;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Authentication;
@@ -36,6 +37,21 @@ namespace QuickDeploy.Client
 
             this.expectedServerCertificate = new X509Certificate2(expectedServerCertificateFilename);
             this.clientCertificate = new X509Certificate2(clientCertificateFilename, clientCertificatePassword, X509KeyStorageFlags.Exportable);
+            this.clientCertificateCollection = new X509Certificate2Collection(this.clientCertificate);
+        }
+
+        public QuickDeployTcpSslClient(
+            string hostname,
+            int port,
+            byte[] expectedServerCertificate,
+            byte[] clientCertificate,
+            string clientCertificatePassword)
+        {
+            this.hostname = hostname;
+            this.port = port;
+
+            this.expectedServerCertificate = new X509Certificate2(expectedServerCertificate);
+            this.clientCertificate = new X509Certificate2(clientCertificate, clientCertificatePassword, X509KeyStorageFlags.Exportable);
             this.clientCertificateCollection = new X509Certificate2Collection(this.clientCertificate);
         }
 
@@ -116,6 +132,49 @@ namespace QuickDeploy.Client
         public ExtractZipResponse ExtractZip(ExtractZipRequest extractZipRequest)
         {
             return this.Call<ExtractZipRequest, ExtractZipResponse>(extractZipRequest);
+        }
+
+        public ProxyResponse Proxy(ProxyRequest proxyRequest)
+        {
+            return this.Call<ProxyRequest, ProxyResponse>(proxyRequest);
+        }
+
+        public IQuickDeployClient GetProxyClient(
+            Credentials credentials,
+            string hostname,
+            int port,
+            string expectedServerCertificateFilename,
+            string clientCertificateFilename,
+            string clientCertificatePassword)
+        {
+            return this.GetProxyClient(
+                credentials,
+                hostname, 
+                port,
+                File.ReadAllBytes(expectedServerCertificateFilename),
+                File.ReadAllBytes(clientCertificateFilename),
+                clientCertificatePassword);
+        }
+
+        public IQuickDeployClient GetProxyClient(
+            Credentials credentials,
+            string hostname,
+            int port,
+            byte[] expectedServerCertificate,
+            byte[] clientCertificate,
+            string clientCertificatePassword)
+        {
+            var proxyRequestTemplate = new ProxyRequest
+            {
+                Hostname = hostname,
+                Port = port,
+                ExpectedServerCertificate = expectedServerCertificate,
+                ClientCertificate = clientCertificate,
+                ClientCertificatePassword = clientCertificatePassword,
+                Credentials = credentials,
+            };
+
+            return new QuickDeployProxyClient(this, proxyRequestTemplate);
         }
 
         private bool VerifyServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
