@@ -59,7 +59,10 @@ namespace QuickDeploy.Client
 
         public SslProtocols EnabledSslProtocols { get; set; } = SslProtocols.Tls12;
 
-        public TResponse Call<TRequest, TResponse>(TRequest request) where TResponse : class
+        public TResponse Call<TRequest, TResponse>(
+            TRequest request, 
+            StatusMessageSender statusMessageSender = null)
+            where TResponse : class
         {
             using (var client = new TcpClient())
             {
@@ -77,7 +80,7 @@ namespace QuickDeploy.Client
 
                         if (receivedMessage is StatusMessage)
                         {
-                            this.HandleStatusMessage(receivedMessage as StatusMessage);
+                            this.HandleStatusMessage(receivedMessage as StatusMessage, statusMessageSender);
                             continue;
                         }
 
@@ -185,15 +188,21 @@ namespace QuickDeploy.Client
                    && this.expectedServerCertificate.Thumbprint == other?.Thumbprint;
         }
 
-        private void HandleStatusMessage(StatusMessage statusMessage)
+        private void HandleStatusMessage(
+            StatusMessage statusMessage,
+            StatusMessageSender statusMessageSender)
         {
             if (statusMessage.Type == StatusMessageType.Error)
             {
-                Console.Error.WriteLine("[SERVER] " + statusMessage.Text);
+                var text = $"[{this.hostname}] " + statusMessage.Text;
+                Console.Error.WriteLine(text);
+                statusMessageSender?.SendError(text);
             }
             else
             {
-                Console.WriteLine("[SERVER] " + statusMessage.Text);
+                var text = $"[{this.hostname}] " + statusMessage.Text;
+                Console.WriteLine(text);
+                statusMessageSender?.SendInfo(text);
             }
         }
     }

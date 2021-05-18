@@ -49,7 +49,6 @@
     <Compile Include="Controller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuickDeployTcpSslServer.cs" />
-    <Compile Include="StatusMessageSender.cs" />
     <Compile Include="WindowsServiceAccessGranter.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -314,7 +314,7 @@ namespace QuickDeploy.Server
                     request.ClientCertificate,
                     request.ClientCertificatePassword);
 
-                client.Call<AuthorizedRequest, BaseResponse>(request.Request);
+                client.Call<AuthorizedRequest, BaseResponse>(request.Request, this.statusMessageSender);
 
                 response.Success = true;
             }
