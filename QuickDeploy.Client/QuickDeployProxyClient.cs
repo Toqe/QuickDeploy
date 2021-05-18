@@ -30,7 +30,14 @@ namespace QuickDeploy.Client
         {
             var proxyRequest = this.streamHelper.Clone(this.proxyRequestTemplate);
             proxyRequest.Request = request;
-            return this.innerClient.Proxy(proxyRequest).Response as TResponse;
+            var proxyResponse = this.innerClient.Proxy(proxyRequest);
+
+            if (proxyResponse?.Success == true)
+            {
+                return proxyResponse.Response as TResponse;
+            }
+
+            throw new ProxyException(proxyResponse?.ErrorMessage);
         }
 
         public AnalyzeDirectoryResponse AnalyzeDirectory(AnalyzeDirectoryRequest analyzeDirectoryRequest)
