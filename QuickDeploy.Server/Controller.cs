@@ -303,20 +303,29 @@ namespace QuickDeploy.Server
 
             this.LogInfo($"Trying to logon as {request.Credentials.Username}");
 
-            using (this.Impersonate(request.Credentials))
+            try
             {
-                this.LogInfo($"Logged on, now acting as proxy and connecting to '{request.Hostname}' port {request.Port}");
+                using (this.Impersonate(request.Credentials))
+                {
+                    this.LogInfo($"Logged on, now acting as proxy and connecting to '{request.Hostname}' port {request.Port}");
 
-                var client = new QuickDeployTcpSslClient(
-                    request.Hostname, 
-                    request.Port,
-                    request.ExpectedServerCertificate, 
-                    request.ClientCertificate,
-                    request.ClientCertificatePassword);
+                    var client = new QuickDeployTcpSslClient(
+                        request.Hostname,
+                        request.Port,
+                        request.ExpectedServerCertificate,
+                        request.ClientCertificate,
+                        request.ClientCertificatePassword);
 
-                client.Call<AuthorizedRequest, BaseResponse>(request.Request, this.statusMessageSender);
+                    var proxyResponse = client.Call<AuthorizedRequest, BaseResponse>(request.Request, this.statusMessageSender);
 
-                response.Success = true;
+                    response.Success = true;
+                    response.Response = proxyResponse;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.ErrorMessage = ex?.ToString();
             }
 
             return response;
