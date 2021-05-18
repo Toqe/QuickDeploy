@@ -150,6 +150,6 @@ You can create the certificates following these steps:
 * Version 1.0.0: Initial release
 
 ## Internal notes
-Create NuGet package: `nuget pack QuickDeploy.Client\QuickDeploy.Client.nuspec`
-Create Installer: `ci.bat pkg`
+* Create NuGet package: `nuget pack QuickDeploy.Client\QuickDeploy.Client.nuspec`
+* Create Installer: `ci.bat pkg`
 ```
