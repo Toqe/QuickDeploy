@@ -148,3 +148,8 @@ You can create the certificates following these steps:
 * Version 2.1.0: Added functionality to sync a single file.
 * Version 2.0.0: Added client authentication for better security. This is a breaking change to version 1.0.0, so clients and servers of different versions can't be used together.
 * Version 1.0.0: Initial release
+
+## Internal notes
+Create NuGet package: `nuget pack QuickDeploy.Client\QuickDeploy.Client.nuspec`
+Create Installer: `ci.bat pkg`
+```
