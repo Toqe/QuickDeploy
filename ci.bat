@@ -6,7 +6,7 @@ pushd .\Build\CI\
 
 ECHO QuickDeploy CI Tool
 
-powershell .\build.ps1 -Verbosity Minimal -Command="%1"
+powershell .\build.ps1 --Verbosity Minimal --settings_skippackageversioncheck=true --Command="%1"
 
 popd
 popd

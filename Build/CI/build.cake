@@ -1,7 +1,3 @@
-#tool nuget:?package=NUnit.ConsoleRunner&version=3.4.0
-#addin "Cake.FileHelpers"
-#addin "Cake.IIS"
-#tool nuget:?package=GitVersion.CommandLine
 #tool nuget:?package=Tools.InnoSetup
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -68,7 +64,7 @@ Task(buildStr)
     NuGetRestore(solutionPath);
 
     Warning("Building Source:");
-    DotNetBuild(solutionPath, settings =>
+    MSBuild(solutionPath, settings =>
     settings.SetConfiguration("Release")
         .SetVerbosity(Verbosity.Minimal)
         .WithTarget("Build")
