@@ -94,11 +94,13 @@ namespace QuickDeploy.Server
                             continue;
                         }
 
-                        ThreadPool.QueueUserWorkItem(state =>
-                        {
-                            var client = (TcpClient)state;
-                            this.HandleClient(client);
-                        }, newClient);
+                        ThreadPool.QueueUserWorkItem(
+                            state =>
+                            {
+                                var client = (TcpClient)state;
+                                this.HandleClient(client);
+                            },
+                            newClient);
                     }
                 });
             }
