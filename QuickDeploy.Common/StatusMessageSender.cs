@@ -1,7 +1,7 @@
 ﻿using System;
 using QuickDeploy.Common.Messages;
 
-namespace QuickDeploy.Server
+namespace QuickDeploy.Common
 {
     public class StatusMessageSender
     {

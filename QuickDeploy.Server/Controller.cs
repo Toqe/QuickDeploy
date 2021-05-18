@@ -7,6 +7,7 @@ using System.Security.Principal;
 using System.ServiceProcess;
 using System.Threading;
 using Microsoft.Web.Administration;
+using QuickDeploy.Client;
 using QuickDeploy.Common;
 using QuickDeploy.Common.FileFinder;
 using QuickDeploy.Common.Messages;
@@ -69,6 +70,11 @@ namespace QuickDeploy.Server
                 if (request is ExtractZipRequest extractZipRequest)
                 {
                     return this.ExtractZip(extractZipRequest);
+                }
+
+                if (request is ProxyRequest proxyRequest)
+                {
+                    return this.Proxy(proxyRequest);
                 }
             }
             catch (Exception ex)
@@ -286,6 +292,40 @@ namespace QuickDeploy.Server
                 ZipFile.ExtractToDirectory(request.ZipFileName, request.DestinationDirectory);
 
                 response.Success = true;
+            }
+
+            return response;
+        }
+
+        private ProxyResponse Proxy(ProxyRequest request)
+        {
+            var response = new ProxyResponse();
+
+            this.LogInfo($"Trying to logon as {request.Credentials.Username}");
+
+            try
+            {
+                using (this.Impersonate(request.Credentials))
+                {
+                    this.LogInfo($"Logged on, now acting as proxy and connecting to '{request.Hostname}' port {request.Port}");
+
+                    var client = new QuickDeployTcpSslClient(
+                        request.Hostname,
+                        request.Port,
+                        request.ExpectedServerCertificate,
+                        request.ClientCertificate,
+                        request.ClientCertificatePassword);
+
+                    var proxyResponse = client.Call<AuthorizedRequest, BaseResponse>(request.Request, this.statusMessageSender);
+
+                    response.Success = true;
+                    response.Response = proxyResponse;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.ErrorMessage = ex?.ToString();
             }
 
             return response;
