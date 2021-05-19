@@ -127,6 +127,55 @@ namespace QuickDeploy.Example
 }
 ```
 
+### Using QuickDeploy proxying
+QuickDeploy proxying can be used when you don't have a direct network connection to a target server ("server B"), but can connect to an intermediate server ("server A") that can reach the target server. This scenario is often the case in VPN setups where you can only directly reach a jump host in a target network, from which you can then access further computers in the network.
+
+As a preparation, you have to create certificates with public private key pairs for server A and server B (see chapter below) and distribute them to the servers. Say, you have used the `QuickDeploy.Common.CertificateGeneration.Console.exe` and renamed the generated folders to `certificates-serverA` and `certificates-serverB`.
+
+Then you can use the following client code to proxy through server A to server B:
+
+```c#
+            var serverAClient = new QuickDeployTcpSslClient(
+                "serverA",
+                9876,
+                System.IO.File.ReadAllBytes("certificates-serverA/client/server-public.pfx"),
+                System.IO.File.ReadAllBytes("certificates-serverA/client/client-private.pfx"),
+                "");
+
+            var serverACredentials = new Credentials
+            {
+                Domain = "server_a_domain",
+                Username = "server_a_user",
+                Password = "server_a_password",
+            };
+
+            var serverBClient = serverAClient.GetProxyClient(
+                serverACredentials,
+                "serverB",
+                9876,
+                System.IO.File.ReadAllBytes("certificates-serverB/client/server-public.pfx"),
+                System.IO.File.ReadAllBytes("certificates-serverB/client/client-private.pfx"),
+                "");
+
+            var serverBCredentials = new Credentials
+            {
+                Domain = "server_b_domain",
+                Username = "server_b_user",
+                Password = "server_b_password",
+            };
+
+            // do some work with serverBClient, for example extract a zip file ...
+
+            var request = new ExtractZipRequest
+            {
+                Credentials = serverBCredentials,
+                ZipFileName = @"c:\temp\test.zip",
+                DestinationDirectory = @"c:\test-extracted",
+            };
+
+            serverBClient.ExtractZip(request);
+```
+
 ## Creation of your own certificates with public private key pairs
 This software uses self signed certificates for the authentication between server and client and the TLS encryption of the transferred messages. It is recommended to create and use your own certificates. Otherwise any attacker having access to the open port of your server may take control over the server.
 
