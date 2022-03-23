@@ -220,7 +220,7 @@ namespace QuickDeploy.Server
 
                     if (appPool.State != ObjectState.Started)
                     {
-                        throw new InvalidOperationException("Could not start IIS app pool {request.IisAppPoolName}.");
+                        throw new InvalidOperationException($"Could not start IIS app pool {request.IisAppPoolName}.");
                     }
                 }
 
@@ -240,7 +240,7 @@ namespace QuickDeploy.Server
 
                     if (appPool.State != ObjectState.Stopped)
                     {
-                        throw new InvalidOperationException("Could not stop IIS app pool {request.IisAppPoolName}.");
+                        throw new InvalidOperationException($"Could not stop IIS app pool {request.IisAppPoolName}.");
                     }
                 }
 
