@@ -58,8 +58,10 @@
     <Compile Include="Messages\AuthorizedRequest.cs" />
     <Compile Include="Messages\BaseResponse.cs" />
     <Compile Include="Messages\ChangeIisAppPoolStatusRequest.cs" />
+    <Compile Include="Messages\GetServiceStatusRequest.cs" />
     <Compile Include="Messages\ChangeServiceStatusRequest.cs" />
     <Compile Include="Messages\ChangeIisAppPoolStatusResponse.cs" />
+    <Compile Include="Messages\GetServiceStatusResponse.cs" />
     <Compile Include="Messages\ChangeServiceStatusResponse.cs" />
     <Compile Include="Messages\Credentials.cs" />
     <Compile Include="Messages\ProxyRequest.cs" />

@@ -14,6 +14,8 @@ namespace QuickDeploy.Common
 
         ChangeServiceStatusResponse ChangeServiceStatus(ChangeServiceStatusRequest changeServiceStatusRequest);
 
+        GetServiceStatusResponse GetServiceStatus(GetServiceStatusRequest getServiceStatusRequest);
+
         ChangeIisAppPoolStatusResponse ChangeIisAppPoolStatus(ChangeIisAppPoolStatusRequest changeIisAppPoolStatusRequest);
 
         ExecuteCommandResponse ExecuteCommand(ExecuteCommandRequest executeCommandRequest);

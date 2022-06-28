@@ -67,6 +67,11 @@ namespace QuickDeploy.Client
             return this.Call<ChangeServiceStatusResponse>(changeServiceStatusRequest);
         }
 
+        public GetServiceStatusResponse GetServiceStatus(GetServiceStatusRequest getServiceStatusRequest)
+        {
+            return this.Call<GetServiceStatusResponse>(getServiceStatusRequest);
+        }
+
         public ChangeIisAppPoolStatusResponse ChangeIisAppPoolStatus(ChangeIisAppPoolStatusRequest changeIisAppPoolStatusRequest)
         {
             return this.Call<ChangeIisAppPoolStatusResponse>(changeIisAppPoolStatusRequest);

@@ -57,6 +57,11 @@ namespace QuickDeploy.Server
                     return this.ChangeServiceStatus(changeServiceStatusRequest);
                 }
 
+                if (request is GetServiceStatusRequest getServiceStatusRequest)
+                {
+                    return this.GetServiceStatus(getServiceStatusRequest);
+                }
+
                 if (request is ChangeIisAppPoolStatusRequest changeIisAppPoolStatus)
                 {
                     return this.ChangeIisAppPoolStatus(changeIisAppPoolStatus);
@@ -183,6 +188,32 @@ namespace QuickDeploy.Server
 
                     return new ChangeServiceStatusResponse { Success = true };
                 }
+            }
+        }
+
+        private GetServiceStatusResponse GetServiceStatus(GetServiceStatusRequest request)
+        {
+            var result = new GetServiceStatusResponse { ServiceName = request.ServiceName };
+
+            this.LogInfo($"Trying to logon as {request.Credentials.Username}");
+
+            WindowsServiceAccessGranter.GrantAccessToWindowStationAndDesktop(request.Credentials.Domain, request.Credentials.Username);
+
+            using (this.Impersonate(request.Credentials, LogonType.Batch))
+            {
+                this.LogInfo($"Logged on, now getting service {request.ServiceName} status");
+
+                var service = ServiceController.GetServices().FirstOrDefault(x => x.ServiceName == request.ServiceName);
+
+                if (service == null)
+                {
+                    return result;
+                }
+
+                result.ServiceExists = true;
+                result.IsRunning = service.Status == ServiceControllerStatus.Running;
+
+                return result;
             }
         }
 

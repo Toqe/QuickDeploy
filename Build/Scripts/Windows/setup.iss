@@ -1,5 +1,5 @@
 #define MyAppName "QuickDeploy Server"
-#define MyAppVersion "2.3.0"
+#define MyAppVersion "2.4.0"
 #define MyAppPublisher "QuickDeploy"
 #define MyAppURL "https://github.com/Toqe/QuickDeploy"
 #define ServiceFileName "QuickDeploy.ServerService.exe"

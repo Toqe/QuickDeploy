@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCompany("Tobias Ebert")]
 [assembly: AssemblyDescription("A simple and efficient tool for deploying software")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCopyright("Copyright © Tobias Ebert 2021")]
+[assembly: AssemblyCopyright("Copyright © Tobias Ebert 2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -22,5 +22,5 @@ using System.Runtime.InteropServices;
 // Sie können alle Werte angeben oder Standardwerte für die Build- und Revisionsnummern verwenden,
 // indem Sie "*" wie unten gezeigt eingeben:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.3.0.0")]
-[assembly: AssemblyFileVersion("2.3.0.0")]
+[assembly: AssemblyVersion("2.4.0.0")]
+[assembly: AssemblyFileVersion("2.4.0.0")]
